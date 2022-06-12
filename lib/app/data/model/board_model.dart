@@ -136,4 +136,5 @@ class Board {
           Pawn(Coordinate(6, y), pieceTypeEnum, PieceColorEnum.WHITE);
     }
   }
+
 }

@@ -31,10 +31,12 @@ class _TileState extends State<Tile> {
           _square(),
           _piece(),
           _debugCoordinate(),
+          _dragTarget()
         ],
       ),
     );
   }
+
 
   Widget _square() {
     return Visibility(
@@ -79,6 +81,19 @@ class _TileState extends State<Tile> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _dragTarget(){
+    return DragTarget<Piece>(
+      builder: (
+          BuildContext context,
+          List<dynamic> accepted,
+          List<dynamic> rejected,
+          ) {
+        return const SizedBox();
+      },
+      onAccept: (Piece piece) => controller.movePieceTo(piece, widget.model),
     );
   }
 }

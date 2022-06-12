@@ -10,7 +10,6 @@ abstract class Piece {
 
   Coordinate actualCoordinate;
   PieceTypeEnum type;
-  late List<MovementEnum> allowedMovements;
   late int range;
   final PieceColorEnum color;
 
@@ -26,16 +25,83 @@ abstract class Piece {
     throw UnimplementedError();
   }
 
-  List<Coordinate> getPossibleTopRightAttacks(Board board) {
+  List<Coordinate> getPossibleFrontSquares(Board board){
+    if(color == PieceColorEnum.WHITE){
+     return _getPossibleTopSquares(board);
+    }
+    return _getPossibleBottomSquares(board);
+  }
+
+  List<Coordinate> getPossibleBackSquares(Board board){
+    if(color == PieceColorEnum.WHITE){
+      return _getPossibleBottomSquares(board);
+    }
+    return _getPossibleTopSquares(board);
+  }
+
+  List<Coordinate> getPossibleDiagonalFrontSquares(Board board){
+    if(color == PieceColorEnum.WHITE){
+      return [
+        ..._getPossibleTopRightSquares(board),
+        ..._getPossibleTopLeftSquares(board),
+      ];
+    }
+    return [
+      ..._getPossibleBottomRightSquares(board),
+      ..._getPossibleBottomLeftSquares(board),
+    ];
+  }
+
+  List<Coordinate> getPossibleDiagonalBackSquares(Board board){
+    if(color == PieceColorEnum.WHITE){
+      return [
+        ..._getPossibleBottomRightSquares(board),
+        ..._getPossibleBottomLeftSquares(board),
+      ];
+    }
+    return [
+      ..._getPossibleTopRightSquares(board),
+      ..._getPossibleTopLeftSquares(board),
+    ];
+  }
+
+  List<Coordinate> getPossibleSidesSquares(Board board){
+    return [
+      ..._getPossibleRightSquares(board),
+      ..._getPossibleLeftSquares(board)
+    ];
+  }
+
+  List<Coordinate> _getPossibleTopRightSquares(Board board) {
     return _testAttack(board, false, false, xMultiplier: -1);
   }
 
-  List<Coordinate> getPossibleTopLeftAttacks(Board board) {
+  List<Coordinate> _getPossibleTopLeftSquares(Board board) {
     return _testAttack(board, false, false, yMultiplier: -1, xMultiplier: -1);
   }
 
-  List<Coordinate> getPossibleTopAttacks(Board board) {
+  List<Coordinate> _getPossibleTopSquares(Board board) {
     return _testAttack(board, false, true, xMultiplier: -1);
+  }
+
+  List<Coordinate> _getPossibleRightSquares(Board board){
+    return _testAttack(board, true, false);
+  }
+
+  List<Coordinate> _getPossibleLeftSquares(Board board){
+    return _testAttack(board, true, false, yMultiplier: -1);
+  }
+
+  List<Coordinate> _getPossibleBottomSquares(Board board){
+    return _testAttack(board, false, true);
+  }
+
+  List<Coordinate> _getPossibleBottomRightSquares(Board board) {
+    return _testAttack(board, false, false);
+  }
+
+  List<Coordinate> _getPossibleBottomLeftSquares(Board board) {
+    return _testAttack(board, false, false, yMultiplier: -1);
   }
 
   List<Coordinate> _testAttack(
