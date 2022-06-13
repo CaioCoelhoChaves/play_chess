@@ -1,6 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
-enum PieceTypeEnum {
+enum PieceType {
   PAWN,
   ROOK,
   KNIGHT,
@@ -9,7 +9,7 @@ enum PieceTypeEnum {
   KING,
 }
 
-enum PieceColorEnum {
+enum PieceColor {
   WHITE,
   BLACK,
 }

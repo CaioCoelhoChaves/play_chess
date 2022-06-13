@@ -5,21 +5,27 @@ import 'piece_model.dart';
 class Pawn extends Piece {
   Pawn(super.actualCoordinate, super.type, super.color) {
     super.range = 1;
+    initialCoordinate = actualCoordinate;
   }
+
+  late Coordinate initialCoordinate;
 
   @override
   List<Coordinate> getPossibleMoves(Board board) {
+    if (!initialCoordinate.isEqualAs(actualCoordinate)) range = 1;
     final possibleMoves = <Coordinate>[];
     final frontSquares = getPossibleFrontSquares(board);
     final diagonalFrontSquares = getPossibleDiagonalFrontSquares(board);
-    if (frontSquares.isNotEmpty &&
-        board.getSquare(frontSquares.first).piece == null) {
-      possibleMoves.add(frontSquares.first);
+    for (var element in frontSquares) {
+      if (board.getSquare(element).piece == null) {
+        possibleMoves.add(element);
+      }
     }
-    if (diagonalFrontSquares.isNotEmpty) {
-      for(int i = 0; i < diagonalFrontSquares.length; i++){
-        if(board.getSquare(diagonalFrontSquares[i]).piece != null){
-          possibleMoves.add(diagonalFrontSquares[i]);
+    for (var element in diagonalFrontSquares) {
+      if (board.getSquare(element).piece != null) {
+        if (element.y == actualCoordinate.y + 1 ||
+            element.y == actualCoordinate.y - 1) {
+          possibleMoves.add(element);
         }
       }
     }

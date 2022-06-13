@@ -30,13 +30,13 @@ class _TileState extends State<Tile> {
         children: [
           _square(),
           _piece(),
+          _dragBarrier(),
           _debugCoordinate(),
-          _dragTarget()
+          _dragTarget(),
         ],
       ),
     );
   }
-
 
   Widget _square() {
     return Visibility(
@@ -84,16 +84,29 @@ class _TileState extends State<Tile> {
     );
   }
 
-  Widget _dragTarget(){
+  Widget _dragTarget() {
     return DragTarget<Piece>(
       builder: (
-          BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,
-          ) {
+        BuildContext context,
+        List<dynamic> accepted,
+        List<dynamic> rejected,
+      ) {
         return const SizedBox();
       },
       onAccept: (Piece piece) => controller.movePieceTo(piece, widget.model),
     );
   }
+
+  Widget _dragBarrier() {
+    return Visibility(
+      visible: widget.model.piece != null &&
+          !controller.isPieceTurn(widget.model.piece!.color),
+      child: Container(
+        width: double.maxFinite,
+        height: double.maxFinite,
+        color: Colors.transparent,
+      ),
+    );
+  }
+
 }

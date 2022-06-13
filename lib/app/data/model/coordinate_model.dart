@@ -9,6 +9,11 @@ class Coordinate{
     return Coordinate(x + sumX, y + sumY);
   }
 
+  bool isEqualAs(Coordinate other){
+    if(x == other.x && y == other.y) return true;
+    return false;
+  }
+
   @override
   String toString() {
     return '(x: $x, y: $y)';

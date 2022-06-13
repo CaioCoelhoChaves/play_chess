@@ -9,9 +9,9 @@ abstract class Piece {
   Piece(this.actualCoordinate, this.type, this.color);
 
   Coordinate actualCoordinate;
-  PieceTypeEnum type;
+  PieceType type;
   late int range;
-  final PieceColorEnum color;
+  final PieceColor color;
 
   bool canMove(Board board, Square target) {
     throw UnimplementedError();
@@ -25,22 +25,22 @@ abstract class Piece {
     throw UnimplementedError();
   }
 
-  List<Coordinate> getPossibleFrontSquares(Board board){
-    if(color == PieceColorEnum.WHITE){
-     return _getPossibleTopSquares(board);
+  List<Coordinate> getPossibleFrontSquares(Board board) {
+    if (color == PieceColor.WHITE) {
+      return _getPossibleTopSquares(board);
     }
     return _getPossibleBottomSquares(board);
   }
 
-  List<Coordinate> getPossibleBackSquares(Board board){
-    if(color == PieceColorEnum.WHITE){
+  List<Coordinate> getPossibleBackSquares(Board board) {
+    if (color == PieceColor.WHITE) {
       return _getPossibleBottomSquares(board);
     }
     return _getPossibleTopSquares(board);
   }
 
-  List<Coordinate> getPossibleDiagonalFrontSquares(Board board){
-    if(color == PieceColorEnum.WHITE){
+  List<Coordinate> getPossibleDiagonalFrontSquares(Board board) {
+    if (color == PieceColor.WHITE) {
       return [
         ..._getPossibleTopRightSquares(board),
         ..._getPossibleTopLeftSquares(board),
@@ -52,8 +52,8 @@ abstract class Piece {
     ];
   }
 
-  List<Coordinate> getPossibleDiagonalBackSquares(Board board){
-    if(color == PieceColorEnum.WHITE){
+  List<Coordinate> getPossibleDiagonalBackSquares(Board board) {
+    if (color == PieceColor.WHITE) {
       return [
         ..._getPossibleBottomRightSquares(board),
         ..._getPossibleBottomLeftSquares(board),
@@ -65,7 +65,7 @@ abstract class Piece {
     ];
   }
 
-  List<Coordinate> getPossibleSidesSquares(Board board){
+  List<Coordinate> getPossibleSidesSquares(Board board) {
     return [
       ..._getPossibleRightSquares(board),
       ..._getPossibleLeftSquares(board)
@@ -73,51 +73,50 @@ abstract class Piece {
   }
 
   List<Coordinate> _getPossibleTopRightSquares(Board board) {
-    return _testAttack(board, false, false, xMultiplier: -1);
+    return _testAttack(board, preserveX: false, preserveY: false, lessX: true);
   }
 
   List<Coordinate> _getPossibleTopLeftSquares(Board board) {
-    return _testAttack(board, false, false, yMultiplier: -1, xMultiplier: -1);
+    return _testAttack(board,
+        preserveX: false, preserveY: false, lessX: true, lessY: true);
   }
 
   List<Coordinate> _getPossibleTopSquares(Board board) {
-    return _testAttack(board, false, true, xMultiplier: -1);
+    return _testAttack(board, preserveX: false, lessX: true);
   }
 
-  List<Coordinate> _getPossibleRightSquares(Board board){
-    return _testAttack(board, true, false);
+  List<Coordinate> _getPossibleRightSquares(Board board) {
+    return _testAttack(board, preserveY: false);
   }
 
-  List<Coordinate> _getPossibleLeftSquares(Board board){
-    return _testAttack(board, true, false, yMultiplier: -1);
+  List<Coordinate> _getPossibleLeftSquares(Board board) {
+    return _testAttack(board, preserveY: false, lessY: true);
   }
 
-  List<Coordinate> _getPossibleBottomSquares(Board board){
-    return _testAttack(board, false, true);
+  List<Coordinate> _getPossibleBottomSquares(Board board) {
+    return _testAttack(board, preserveX: false);
   }
 
   List<Coordinate> _getPossibleBottomRightSquares(Board board) {
-    return _testAttack(board, false, false);
+    return _testAttack(board, preserveX: false, preserveY: false);
   }
 
   List<Coordinate> _getPossibleBottomLeftSquares(Board board) {
-    return _testAttack(board, false, false, yMultiplier: -1);
+    return _testAttack(board, preserveX: false, preserveY: false, lessY: true);
   }
 
-  List<Coordinate> _testAttack(
-    Board board,
-    bool preserveX,
-    bool preserveY, {
-    int xMultiplier = 1,
-    int yMultiplier = 1,
-  }) {
+  List<Coordinate> _testAttack(Board board,
+      {bool preserveX = true,
+      bool preserveY = true,
+      bool lessX = false,
+      bool lessY = false}) {
     List<Coordinate> attackedCoordinates = [];
-    var testedCoordinate = Coordinate(actualCoordinate.x, actualCoordinate.y);
     int i = 0;
     while (i < range) {
       i++;
-      int xValue = preserveX ? 0 : i * xMultiplier;
-      int yValue = preserveY ? 0 : i * yMultiplier;
+      var testedCoordinate = Coordinate(actualCoordinate.x, actualCoordinate.y);
+      int xValue = preserveX ? 0 : i * (lessX ? -1 : 1);
+      int yValue = preserveY ? 0 : i * (lessY ? -1 : 1);
       testedCoordinate = testedCoordinate.sumCoordinate(xValue, yValue);
       if (board.coordinateExist(testedCoordinate)) {
         if (board.getSquare(testedCoordinate).piece == null ||
@@ -134,22 +133,22 @@ abstract class Piece {
   String getImagePath() {
     String imagePath = AppConstants.defaultImagePath;
     switch (type) {
-      case PieceTypeEnum.PAWN:
+      case PieceType.PAWN:
         imagePath += "/pawn_${_getImageColor()}";
         break;
-      case PieceTypeEnum.ROOK:
+      case PieceType.ROOK:
         imagePath += "/rook_${_getImageColor()}";
         break;
-      case PieceTypeEnum.KNIGHT:
+      case PieceType.KNIGHT:
         imagePath += "/knight_${_getImageColor()}";
         break;
-      case PieceTypeEnum.BISHOP:
+      case PieceType.BISHOP:
         imagePath += "/bishop_${_getImageColor()}";
         break;
-      case PieceTypeEnum.QUEEN:
+      case PieceType.QUEEN:
         imagePath += "/queen_${_getImageColor()}";
         break;
-      case PieceTypeEnum.KING:
+      case PieceType.KING:
         imagePath += "/king_${_getImageColor()}";
         break;
     }
@@ -157,7 +156,7 @@ abstract class Piece {
   }
 
   String _getImageColor() {
-    return color == PieceColorEnum.BLACK ? "black" : "white";
+    return color == PieceColor.BLACK ? "black" : "white";
   }
 
   @override

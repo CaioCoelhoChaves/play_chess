@@ -2,10 +2,10 @@ import '../../config/constants/app_constants.dart';
 import '../enum/piece_enums.dart';
 import 'coordinate_model.dart';
 import 'pawn_model.dart';
+import 'piece_model.dart';
 import 'square_model.dart';
 
 class Board {
-
   Board() {
     squares = _getInitialBoard();
   }
@@ -27,20 +27,47 @@ class Board {
     return false;
   }
 
-  void markTestedMovesSquares(List<Coordinate> coordinates){
-    for(int i = 0; i < coordinates.length; i++){
+  void markTestedMovesSquares(List<Coordinate> coordinates) {
+    for (int i = 0; i < coordinates.length; i++) {
       squares[coordinates[i].x][coordinates[i].y].canMove = true;
       _testingMoveSquares.add(coordinates[i]);
     }
   }
 
-  unmarkTestedMovesSquares(){
-    for(int i = 0; i < _testingMoveSquares.length; i++){
-      squares[_testingMoveSquares[i].x][_testingMoveSquares[i].y].canMove = false;
+  unmarkTestedMovesSquares() {
+    for (int i = 0; i < _testingMoveSquares.length; i++) {
+      squares[_testingMoveSquares[i].x][_testingMoveSquares[i].y].canMove =
+          false;
     }
     _testingMoveSquares.clear();
   }
 
+  void _putInitialPiece(Coordinate coordinate, PieceType pieceType, PieceColor color,
+      List<List<Square>> squares) {
+    Piece piece;
+    switch (pieceType) {
+      case PieceType.PAWN:
+        piece = Pawn(coordinate, pieceType, color);
+        break;
+      default:
+        piece = Pawn(coordinate, pieceType, color);
+    }
+    squares[coordinate.x][coordinate.y].piece = piece;
+  }
+
+  void _putPiece(Piece piece, Coordinate target){
+    squares[target.x][target.y].piece = piece;
+  }
+
+  void _removePiece(Piece piece){
+    squares[piece.actualCoordinate.x][piece.actualCoordinate.y].piece = null;
+  }
+
+  void movePiece(Piece piece, Coordinate target){
+    _removePiece(piece);
+    piece.actualCoordinate = target;
+    _putPiece(piece, target);
+  }
 
   /// Return initial
   List<List<Square>> _getInitialBoard() {
@@ -66,75 +93,16 @@ class Board {
   }
 
   void _putInitialPieces(List<List<Square>> squares) {
-    /*_putRooks(squares);
-    _putKnights(squares);
-    _putBishops(squares);
-    _putQueens(squares);
-    _putKings(squares);*/
     _putPawns(squares);
   }
 
-  /*void _putRooks(List<List<Square>> squares) {
-    const PieceTypeEnum pieceType = PieceTypeEnum.ROOK;
-    squares[0][0].piece =
-        Piece(Coordinate(0, 0), pieceType, PieceColorEnum.BLACK);
-    squares[0][7].piece =
-        Piece(Coordinate(0, 7), pieceType, PieceColorEnum.BLACK);
-    squares[7][0].piece =
-        Piece(Coordinate(7, 0), pieceType, PieceColorEnum.WHITE);
-    squares[7][7].piece =
-        Piece(Coordinate(7, 7), pieceType, PieceColorEnum.WHITE);
-  }
-
-  void _putKnights(List<List<Square>> squares) {
-    const PieceTypeEnum pieceType = PieceTypeEnum.KNIGHT;
-    squares[0][1].piece =
-        Piece(Coordinate(0, 1), pieceType, PieceColorEnum.BLACK);
-    squares[0][6].piece =
-        Piece(Coordinate(0, 6), pieceType, PieceColorEnum.BLACK);
-    squares[7][1].piece =
-        Piece(Coordinate(7, 1), pieceType, PieceColorEnum.WHITE);
-    squares[7][6].piece =
-        Piece(Coordinate(7, 6), pieceType, PieceColorEnum.WHITE);
-  }
-
-  void _putBishops(List<List<Square>> squares) {
-    const PieceTypeEnum pieceTypeEnum = PieceTypeEnum.BISHOP;
-    squares[0][2].piece =
-        Piece(Coordinate(0, 2), pieceTypeEnum, PieceColorEnum.BLACK);
-    squares[0][5].piece =
-        Piece(Coordinate(0, 5), pieceTypeEnum, PieceColorEnum.BLACK);
-    squares[7][2].piece =
-        Piece(Coordinate(7, 2), pieceTypeEnum, PieceColorEnum.WHITE);
-    squares[7][5].piece =
-        Piece(Coordinate(7, 5), pieceTypeEnum, PieceColorEnum.WHITE);
-  }
-
-  void _putQueens(List<List<Square>> squares){
-    const PieceTypeEnum pieceTypeEnum = PieceTypeEnum.QUEEN;
-    squares[0][3].piece =
-        Piece(Coordinate(0, 3), pieceTypeEnum, PieceColorEnum.BLACK);
-    squares[7][3].piece =
-        Piece(Coordinate(7, 3), pieceTypeEnum, PieceColorEnum.WHITE);
-  }
-
-  void _putKings(List<List<Square>> squares){
-    const PieceTypeEnum pieceTypeEnum = PieceTypeEnum.KING;
-    squares[0][4].piece =
-        Piece(Coordinate(0, 4), pieceTypeEnum, PieceColorEnum.BLACK);
-    squares[7][4].piece =
-        Piece(Coordinate(7, 4), pieceTypeEnum, PieceColorEnum.WHITE);
-  }*/
-
   void _putPawns(List<List<Square>> squares) {
-    const PieceTypeEnum pieceTypeEnum = PieceTypeEnum.PAWN;
-    squares[2][3].piece = Pawn(Coordinate(2, 3), pieceTypeEnum, PieceColorEnum.WHITE);
+    const PieceType pieceType = PieceType.PAWN;
     for (int y = 0; y <= 7; y++) {
-      squares[1][y].piece =
-          Pawn(Coordinate(1, y), pieceTypeEnum, PieceColorEnum.BLACK);
-      squares[6][y].piece =
-          Pawn(Coordinate(6, y), pieceTypeEnum, PieceColorEnum.WHITE);
+      _putInitialPiece(Coordinate(1, y), pieceType, PieceColor.BLACK, squares);
+      _putInitialPiece(Coordinate(6, y), pieceType, PieceColor.WHITE, squares);
     }
   }
 
 }
+
