@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import '../../config/constants/app_constants.dart';
 import '../enum/piece_enums.dart';
 import 'coordinate_model.dart';
