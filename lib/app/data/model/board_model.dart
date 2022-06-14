@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../config/constants/app_constants.dart';
 import '../enum/piece_enums.dart';
 import 'coordinate_model.dart';
@@ -11,12 +13,30 @@ class Board {
   }
 
   late List<List<Square>> squares;
-  //final List<Coordinate> _attackedSquares = [];
   final List<Coordinate> _testingMoveSquares = [];
+  final List<Piece> _whitePieces = [];
+  final List<Piece> _blackPieces = [];
+  Coordinate? enPassant;
 
   /// Receiving a [Coordinate] return a square
   Square getSquare(Coordinate coordinate) {
     return squares[coordinate.x][coordinate.y];
+  }
+
+  List<Coordinate> getWhiteAttackingCoordinates(){
+    List<Coordinate> attacking = [];
+    for(var element in _whitePieces){
+      attacking.addAll(element.getPossibleAttacks(this));
+    }
+    return attacking;
+  }
+
+  List<Coordinate> getBlackAttackingCoordinates(){
+    List<Coordinate> attacking = [];
+    for(var element in _blackPieces){
+      attacking.addAll(element.getPossibleAttacks(this));
+    }
+    return attacking;
   }
 
   bool coordinateExist(Coordinate coordinate) {
@@ -42,8 +62,8 @@ class Board {
     _testingMoveSquares.clear();
   }
 
-  void _putInitialPiece(Coordinate coordinate, PieceType pieceType, PieceColor color,
-      List<List<Square>> squares) {
+  void _putInitialPiece(Coordinate coordinate, PieceType pieceType,
+      PieceColor color, List<List<Square>> squares) {
     Piece piece;
     switch (pieceType) {
       case PieceType.PAWN:
@@ -55,18 +75,39 @@ class Board {
     squares[coordinate.x][coordinate.y].piece = piece;
   }
 
-  void _putPiece(Piece piece, Coordinate target){
+  void _putPiece(Piece piece, Coordinate target) {
+    Piece? targetPiece = getSquare(target).piece;
+    if(targetPiece != null){
+      _killPiece(targetPiece);
+    }
     squares[target.x][target.y].piece = piece;
   }
 
-  void _removePiece(Piece piece){
+  void movePiece(Piece piece, Coordinate target) {
+    if(enPassant != null && target.isEqualAs(enPassant!)){
+      if(piece.color == PieceColor.BLACK){
+        _killPiece(getSquare(target.sumCoordinate(-1, 0)).piece!);
+      }else{
+        _killPiece(getSquare(target.sumCoordinate(1, 0)).piece!);
+      }
+    }
+    _removePiece(piece);
+    _createEnPassant(piece, target);
+    piece.onMove(target);
+    _putPiece(piece, target);
+  }
+
+  void _removePiece(Piece piece) {
     squares[piece.actualCoordinate.x][piece.actualCoordinate.y].piece = null;
   }
 
-  void movePiece(Piece piece, Coordinate target){
+  void _killPiece(Piece piece){
+    if(piece.color == PieceColor.BLACK){
+      _blackPieces.remove(piece);
+    }else{
+      _whitePieces.remove(piece);
+    }
     _removePiece(piece);
-    piece.actualCoordinate = target;
-    _putPiece(piece, target);
   }
 
   /// Return initial
@@ -100,9 +141,24 @@ class Board {
     const PieceType pieceType = PieceType.PAWN;
     for (int y = 0; y <= 7; y++) {
       _putInitialPiece(Coordinate(1, y), pieceType, PieceColor.BLACK, squares);
+      _blackPieces.add(squares[1][y].piece!);
       _putInitialPiece(Coordinate(6, y), pieceType, PieceColor.WHITE, squares);
+      _whitePieces.add(squares[6][y].piece!);
     }
   }
 
-}
+  bool _createEnPassant(Piece piece, Coordinate target) {
+    if (piece.enableEnPassant(target)) {
+      enPassant = piece.color == PieceColor.BLACK
+          ? piece.actualCoordinate.sumCoordinate(1, 0)
+          : piece.actualCoordinate.sumCoordinate(-1, 0);
+      return true;
+    }
+    enPassant = null;
+    return false;
+  }
 
+  int getQtWhites()=> _whitePieces.length;
+  int getQtBlacks()=> _blackPieces.length;
+
+}

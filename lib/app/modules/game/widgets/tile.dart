@@ -30,8 +30,8 @@ class _TileState extends State<Tile> {
         children: [
           _square(),
           _piece(),
+          _debugProperties(),
           _dragBarrier(),
-          _debugCoordinate(),
           _dragTarget(),
         ],
       ),
@@ -67,18 +67,31 @@ class _TileState extends State<Tile> {
     return const SizedBox();
   }
 
-  Widget _debugCoordinate() {
+  Widget _debugProperties() {
     return Visibility(
       visible: AppConfig.debugMode,
       child: Align(
         alignment: Alignment.bottomRight,
-        child: Text(
-          widget.model.coordinate.toString(),
-          style: const TextStyle(
-            fontSize: 12.0,
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Visibility(
+              visible: controller.board.value.enPassant
+                      ?.isEqualAs(widget.model.coordinate) ??
+                  false,
+              child: const Text("En Passant",
+                  style:
+                      TextStyle(fontSize: 10.0, color: Colors.amber)),
+            ),
+            Text(
+              widget.model.coordinate.toString(),
+              style: const TextStyle(
+                fontSize: 12.0,
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -108,5 +121,4 @@ class _TileState extends State<Tile> {
       ),
     );
   }
-
 }

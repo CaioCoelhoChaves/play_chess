@@ -16,22 +16,36 @@ class GameView extends GetView<GameController> {
       ),
       body: Column(
         children: [
-          for(int x = 0; x < 8; x++)...[
+          for (int x = 0; x < 8; x++) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for(int y = 0; y < 8; y++)...[
+                for (int y = 0; y < 8; y++) ...[
                   Obx(
-                    () {
-                      return Tile(model: controller.board.value.getSquare(Coordinate(x, y)));
-                    }
+                    () => Tile(
+                      model: controller.board.value.getSquare(
+                        Coordinate(x, y),
+                      ),
+                    ),
                   )
                 ]
               ],
             )
-          ]
+          ],
+          Obx(
+            () => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Qt.Whites: ${controller.board.value.getQtWhites()}"),
+                  Text("Qt.Blacks: ${controller.board.value.getQtBlacks()}")
+                ],
+              ),
+            ),
+          )
         ],
-      )
+      ),
     );
   }
 }

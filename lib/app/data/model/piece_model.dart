@@ -12,6 +12,12 @@ abstract class Piece {
   PieceType type;
   late int range;
   final PieceColor color;
+  bool firstMove = true;
+
+  void onMove(Coordinate target){
+    firstMove = false;
+    actualCoordinate = target;
+  }
 
   bool canMove(Board board, Square target) {
     throw UnimplementedError();
@@ -157,6 +163,10 @@ abstract class Piece {
 
   String _getImageColor() {
     return color == PieceColor.BLACK ? "black" : "white";
+  }
+
+  bool enableEnPassant(Coordinate target){
+    return false;
   }
 
   @override

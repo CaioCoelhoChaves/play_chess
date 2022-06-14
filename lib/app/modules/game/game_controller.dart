@@ -10,7 +10,6 @@ class GameController extends GetxController {
   final Rx<Board> board = Rx(Board());
 
   PieceColor turn = PieceColor.WHITE;
-
   movePieceTo(Piece movedPiece, Square target) {
     if (_isMovePossible(movedPiece, target.coordinate)) {
       board.value.movePiece(movedPiece, target.coordinate);
@@ -35,7 +34,7 @@ class GameController extends GetxController {
     List<Coordinate> piecePossibleMoves = piece.getPossibleMoves(board.value);
     for (int i = 0; i < piecePossibleMoves.length; i++) {
       final coordinate = piecePossibleMoves[i];
-      if (coordinate.x == target.x && coordinate.y == target.y) {
+      if(coordinate.isEqualAs(target)){
         return true;
       }
     }
