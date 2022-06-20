@@ -20,7 +20,14 @@ abstract class Piece {
   }
 
   bool canMove(Board board, Square target) {
-    throw UnimplementedError();
+    List<Coordinate> piecePossibleMoves = getPossibleMoves(board);
+    for (int i = 0; i < piecePossibleMoves.length; i++) {
+      final coordinate = piecePossibleMoves[i];
+      if(coordinate.isEqualAs(target.coordinate)){
+        return true;
+      }
+    }
+    return false;
   }
 
   List<Coordinate> getPossibleMoves(Board board) {
@@ -173,4 +180,9 @@ abstract class Piece {
   String toString() {
     return 'Piece{actualCoordinate: $actualCoordinate, type: $type, color: $color}';
   }
+
+  Piece copy(){
+    throw UnimplementedError();
+  }
+
 }

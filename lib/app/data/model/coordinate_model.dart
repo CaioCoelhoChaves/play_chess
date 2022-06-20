@@ -18,4 +18,9 @@ class Coordinate{
   String toString() {
     return '(x: $x, y: $y)';
   }
+
+  Coordinate copy(){
+    return Coordinate(x, y);
+  }
+
 }

@@ -1,19 +1,20 @@
 import 'package:play_chess/app/data/enum/piece_enums.dart';
-
 import 'board_model.dart';
 import 'coordinate_model.dart';
 import 'piece_model.dart';
 
 class Pawn extends Piece {
-  Pawn(super.actualCoordinate, super.type, super.color) {
-    super.range = 2;
-    initialCoordinate = actualCoordinate;
+  Pawn(super.actualCoordinate, super.type, super.color,
+      {Coordinate? initialCoordinate, int? range, bool? firstMove}) {
+    super.range = range ?? 2;
+    super.firstMove = firstMove ?? true;
+    this.initialCoordinate = initialCoordinate ?? actualCoordinate;
   }
 
   late final Coordinate initialCoordinate;
 
   @override
-  void onMove(Coordinate target){
+  void onMove(Coordinate target) {
     super.onMove(target);
     range = 1;
   }
@@ -40,6 +41,11 @@ class Pawn extends Piece {
     return possibleMoves;
   }
 
+  @override
+  List<Coordinate> getPossibleAttacks(Board board) {
+    return getPossibleDiagonalFrontSquares(board);
+  }
+
   /// Call this method before move the piece
   @override
   bool enableEnPassant(Coordinate target) {
@@ -53,7 +59,14 @@ class Pawn extends Piece {
   }
 
   @override
-  List<Coordinate> getPossibleAttacks(Board board) {
-    return getPossibleDiagonalFrontSquares(board);
+  Pawn copy() {
+    return Pawn(
+      actualCoordinate.copy(),
+      type,
+      color,
+      range: range,
+      initialCoordinate: initialCoordinate,
+      firstMove: firstMove,
+    );
   }
 }
